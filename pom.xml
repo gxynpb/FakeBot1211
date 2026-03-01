@@ -12,10 +12,14 @@
             <id>papermc-repo</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
-        <!-- 添加 Mojang 仓库，用于下载 authlib -->
         <repository>
             <id>mojang-repo</id>
             <url>https://libraries.minecraft.net/</url>
+        </repository>
+        <!-- 添加 Spigot 仓库，用于获取 CraftBukkit 类 -->
+        <repository>
+            <id>spigotmc-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
     </repositories>
 
@@ -26,11 +30,17 @@
             <version>1.21.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <!-- 添加 authlib 依赖，解决 GameProfile 找不到的问题 -->
         <dependency>
             <groupId>com.mojang</groupId>
             <artifactId>authlib</artifactId>
             <version>3.11.50</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- 添加 CraftBukkit 依赖，用于获取 CraftServer 类 -->
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>craftbukkit</artifactId>
+            <version>1.21.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
