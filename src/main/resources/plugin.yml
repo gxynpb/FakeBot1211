@@ -1,0 +1,10 @@
+name: FakeBot
+version: 1.0
+main: me.fakebot.FakePlayerPlugin
+api-version: 1.21
+authors: [You]
+description: 1.21.10 Leaf假人插件
+commands:
+  fakeplayer:
+    aliases: [bot, fp]
+    permission: op
