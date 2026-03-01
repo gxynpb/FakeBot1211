@@ -1,5 +1,6 @@
 package me.fakebot;
 
+import com.mojang.authlib.GameProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -18,9 +19,9 @@ public class FakePlayerManager {
             return;
         }
 
-        // 1. 创建游戏档案
-        var profile = Bukkit.createProfile(UUID.randomUUID(), name);
-        // 2. 使用 Paper API 创建假人
+        // 1. 创建 GameProfile（修复第一个错误）
+        GameProfile profile = new GameProfile(UUID.randomUUID(), name);
+        // 2. 使用 Bukkit API 创建假人
         Player fakePlayer = Bukkit.createPlayer(profile);
 
         // 3. 传送假人到指定位置
@@ -29,8 +30,9 @@ public class FakePlayerManager {
             return;
         }
 
-        // 4. 触发登录事件，让服务器和其他插件正确识别假人
-        var loginEvent = new PlayerLoginEvent(fakePlayer, PlayerLoginEvent.Result.ALLOWED, null);
+        // 4. 触发登录事件（修复第二个错误）
+        PlayerLoginEvent loginEvent = new PlayerLoginEvent(fakePlayer, "localhost", null);
+        loginEvent.setResult(PlayerLoginEvent.Result.ALLOWED);
         Bukkit.getPluginManager().callEvent(loginEvent);
 
         if (loginEvent.getResult() != PlayerLoginEvent.Result.ALLOWED) {
@@ -38,7 +40,7 @@ public class FakePlayerManager {
             return;
         }
 
-        // 5. 将假人加入世界（异步任务确保在主线程执行）
+        // 5. 将假人加入世界
         Bukkit.getScheduler().runTask(plugin, () -> {
             fakePlayer.spigot().respawn();
             fakePlayers.put(name, fakePlayer);
@@ -53,7 +55,6 @@ public class FakePlayerManager {
             return;
         }
 
-        // 主线程安全地移除假人
         Bukkit.getScheduler().runTask(plugin, () -> {
             fakePlayer.kickPlayer("Removed by FakeBot");
             fakePlayers.remove(name);
@@ -62,7 +63,6 @@ public class FakePlayerManager {
     }
 
     public void removeAll() {
-        // 遍历副本，避免在迭代时修改原集合
         new ArrayList<>(fakePlayers.keySet()).forEach(this::removeFakePlayer);
     }
 
