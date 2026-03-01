@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.craftbukkit.CraftServer; // 导入 CraftServer
 
 import java.util.*;
 
@@ -19,17 +20,19 @@ public class FakePlayerManager {
             return;
         }
 
-        // 使用标准的 GameProfile 创建假人
+        // 1. 创建 GameProfile
         GameProfile profile = new GameProfile(UUID.randomUUID(), name);
-        Player fakePlayer = Bukkit.createPlayer(profile);
+        // 2. 使用 CraftServer 创建假人
+        CraftServer craftServer = (CraftServer) Bukkit.getServer();
+        Player fakePlayer = craftServer.createPlayer(profile);
 
-        // 传送假人到指定位置
+        // 3. 传送假人到指定位置
         if (!fakePlayer.teleport(loc)) {
             plugin.getLogger().severe("假人 " + name + " 传送失败，位置无效");
             return;
         }
 
-        // 触发登录事件，让服务器正确识别假人
+        // 4. 触发登录事件
         PlayerLoginEvent loginEvent = new PlayerLoginEvent(fakePlayer, "localhost", null);
         loginEvent.setResult(PlayerLoginEvent.Result.ALLOWED);
         Bukkit.getPluginManager().callEvent(loginEvent);
@@ -39,7 +42,7 @@ public class FakePlayerManager {
             return;
         }
 
-        // 主线程安全地将假人加入世界
+        // 5. 主线程安全地将假人加入世界
         Bukkit.getScheduler().runTask(plugin, () -> {
             fakePlayer.spigot().respawn();
             fakePlayers.put(name, fakePlayer);
