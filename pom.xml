@@ -12,10 +12,7 @@
             <id>papermc-repo</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
-        <repository>
-            <id>mojang-repo</id>
-            <url>https://libraries.minecraft.net/</url>
-        </repository>
+        <!-- 移除了mojang-repo，因为不再需要authlib -->
     </repositories>
 
     <dependencies>
@@ -25,12 +22,7 @@
             <version>1.21.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>com.mojang</groupId>
-            <artifactId>authlib</artifactId>
-            <version>3.11.50</version>
-            <scope>provided</scope>
-        </dependency>
+        <!-- 移除了authlib依赖 -->
     </dependencies>
 
     <build>
