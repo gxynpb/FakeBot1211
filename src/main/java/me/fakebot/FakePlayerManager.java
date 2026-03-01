@@ -1,33 +1,39 @@
 package me.fakebot;
 
-import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.CraftServer;
-import org.bukkit.craftbukkit.CraftWorld;
-import com.mojang.authlib.GameProfile;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerLoginEvent;
+
 import java.util.*;
 
 public class FakePlayerManager {
-    private final Map<String, ServerPlayer> fakePlayers = new HashMap<>();
+    private final Map<String, Player> fakePlayers = new HashMap<>();
 
     public void createFakePlayer(String name, Location loc) {
-        if(fakePlayers.containsKey(name)) return;
-        GameProfile profile = new GameProfile(UUID.randomUUID(), name);
-        ServerPlayer sp = new ServerPlayer(
-            ((CraftServer)Bukkit.getServer()).getServer(),
-            ((CraftWorld)loc.getWorld()).getHandle(),
-            profile
-        );
-        sp.setPos(loc.getX(), loc.getY(), loc.getZ());
-        ((CraftServer)Bukkit.getServer()).getServer().getPlayerList().addPlayer(sp);
-        fakePlayers.put(name, sp);
+        if (fakePlayers.containsKey(name)) return;
+
+        // 创建游戏档案
+        var profile = Bukkit.createProfile(UUID.randomUUID(), name);
+        // 使用 Paper API 创建假人
+        Player fakePlayer = Bukkit.createPlayer(profile);
+
+        // 传送假人到指定位置
+        fakePlayer.teleport(loc);
+
+        // 触发登录事件，让服务器正确识别假人
+        var loginEvent = new PlayerLoginEvent(fakePlayer, PlayerLoginEvent.Result.ALLOWED, null);
+        Bukkit.getPluginManager().callEvent(loginEvent);
+
+        // 将假人加入世界
+        fakePlayer.spigot().respawn();
+        fakePlayers.put(name, fakePlayer);
     }
 
     public void removeFakePlayer(String name) {
-        ServerPlayer sp = fakePlayers.get(name);
-        if(sp != null) {
-            sp.connection.disconnect("Remove");
+        Player fakePlayer = fakePlayers.get(name);
+        if (fakePlayer != null) {
+            fakePlayer.kickPlayer("Removed by admin");
             fakePlayers.remove(name);
         }
     }
@@ -36,6 +42,11 @@ public class FakePlayerManager {
         new ArrayList<>(fakePlayers.keySet()).forEach(this::removeFakePlayer);
     }
 
-    public List<String> getList() { return new ArrayList<>(fakePlayers.keySet()); }
-    public boolean exists(String name) { return fakePlayers.containsKey(name); }
+    public List<String> getList() {
+        return new ArrayList<>(fakePlayers.keySet());
+    }
+
+    public boolean exists(String name) {
+        return fakePlayers.containsKey(name);
+    }
 }
