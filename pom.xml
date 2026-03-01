@@ -10,7 +10,7 @@
     <packaging>jar</packaging>
 
     <name>FakeBot</name>
-    <description>A fake bot plugin for Minecraft</description>
+    <description>A fake bot plugin for Minecraft 1.21.11</description>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -32,18 +32,18 @@
     </repositories>
 
     <dependencies>
-        <!-- Spigot API 依赖 -->
+        <!-- Spigot API 依赖（适配 1.21.11） -->
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.20.4-R0.1-SNAPSHOT</version>
+            <version>1.21.11-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <!-- CraftBukkit 依赖（如果需要使用内部类，如 CraftPlayer 等） -->
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>craftbukkit</artifactId>
-            <version>1.20.4-R0.1-SNAPSHOT</version>
+            <version>1.21.11-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
